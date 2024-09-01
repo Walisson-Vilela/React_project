@@ -1,52 +1,35 @@
-import { useState } from "react";
-import "./App.css";
+import React from 'react';
+import Produto from './Produto';
 
-const luana = {
-  cliente: "Luana",
-  idade: 31,
-  compras: [
-    { nome: "Notebook", preco: "R$ 2500" },
-    { nome: "Geladeira", preco: "R$ 1000" },
-    { nome: "Smartphone", preco: "R$ 1500" },
-    { nome: "Guitarra", preco: "R$ 3500" },
-  ],
-  ativa: true,
-};
+const App = () => {
+  const [dados, setDados] = React.useState(null);
+  const [carregando, setCarregando] = React.useState(null);
 
-const mario = {
-  cliente: "Mario",
-  idade: 31,
-  compras: [
-    { nome: "Notebook", preco: "R$ 2500" },
-    { nome: "Geladeira", preco: "R$ 3000" },
-    { nome: "Smartphone", preco: "R$ 1500" },
-    { nome: "Guitarra", preco: "R$ 3500" },
-  ],
-  ativa: false,
-};
-
-function App() {
-  const dados = luana;
-  const total = dados.compras
-    .map((item) => Number(item.preco.replace("R$ ", "")))
-    .reduce((a, b) => a + b);
+  async function handleClick(event) {
+    setCarregando(true);
+    const response = await fetch(
+      `https://ranekapi.origamid.dev/json/api/produto/${event.target.innerText}`,
+    );
+    const json = await response.json();
+    setDados(json);
+    setCarregando(false);
+  }
 
   return (
-    <div style={{ display: "inline-block" }}>
-      Nome: {dados.cliente}
-      <br />
-      Idade: {dados.idade}
-      <br />
-      Total gasto: {total} <br />
-      <div style={{ display: "flex" }}>
-        Situação:{' '}
-        <span style={{ color: dados.ativa ? "green" : "red" }}>
-          {dados.ativa ? "Ativa" : "Inativa"}
-        </span>
-      </div>
-      <p>{total > 10000 && 'Voce esta gastando muito'}</p>
+    <div>
+      <button style={{ margin: '.5rem' }} onClick={handleClick}>
+        notebook
+      </button>
+      <button style={{ margin: '.5rem' }} onClick={handleClick}>
+        smartphone
+      </button>
+      <button style={{ margin: '.5rem' }} onClick={handleClick}>
+        tablet
+      </button>
+      {carregando && <p>Carregando...</p>}
+      {!carregando && dados && <Produto dados={dados} />}
     </div>
   );
-}
+};
 
 export default App;
